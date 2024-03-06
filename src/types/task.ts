@@ -1,10 +1,10 @@
 export enum Priority {
-  low,
-  medium,
-  high
+  low = 'low',
+  medium = 'medium',
+  high = 'high'
 }
 
-export interface Todo {
+export interface Task {
   id: number
   title: string
   subtitle: string
@@ -12,4 +12,5 @@ export interface Todo {
   createdAt: string
   updatedAt: string
   priority: string
+  is_done: boolean
 }

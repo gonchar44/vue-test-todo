@@ -1,29 +1,29 @@
 import { defineStore } from 'pinia'
 import axiosService from '@/services/axios'
 import { Pagination } from '@/types/pagination'
-import { Todo } from '@/types/todo'
+import { Task } from '@/types/task'
 
 interface State {
   isLoading: boolean
   pagination: Pagination | object
-  todos: Todo[]
+  tasks: Task[]
 }
 
-export const useTodosStore = defineStore('todos', {
+export const useTasksStore = defineStore('tasks', {
   state: (): State => ({
     isLoading: false,
     pagination: {},
-    todos: []
+    tasks: []
   }),
   actions: {
-    fetchTodos() {
+    fetchTasks() {
       this.isLoading = true
       axiosService
-        .get('/todos')
+        .get('/tasks?populate=subtasks')
         .then((res) => {
           const { data, meta } = res.data
 
-          this.todos = data
+          this.tasks = data
           this.pagination = meta.pagination
         })
         .finally(() => {
@@ -31,7 +31,7 @@ export const useTodosStore = defineStore('todos', {
         })
         .catch((err) => {
           // TODO: handle error here
-          console.error('fetch todos error', err)
+          console.error('fetch tasks error', err)
         })
     }
   }
