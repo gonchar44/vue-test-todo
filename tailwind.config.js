@@ -2,7 +2,12 @@
 module.exports = {
   content: ['./src/**/*.{vue,js,ts}'],
   theme: {
-    extend: {}
+    extend: {
+      fontFamily: {
+        monospace: 'monospace',
+        nunito: 'Nunito'
+      }
+    }
   },
   plugins: []
 }
