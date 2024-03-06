@@ -26,12 +26,27 @@ export const useTasksStore = defineStore('tasks', {
           this.tasks = data
           this.pagination = meta.pagination
         })
-        .finally(() => {
-          this.isLoading = false
-        })
         .catch((err) => {
           // TODO: handle error here
           console.error('fetch tasks error', err)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+    deleteTask(id: number) {
+      this.isLoading = true
+      return axiosService
+        .delete(`/tasks/${id}`)
+        .then(() => {
+          this.tasks = this.tasks.filter((task) => task.id !== id)
+        })
+        .catch((err) => {
+          // TODO: handle error here
+          console.error('delete task error', err)
+        })
+        .finally(() => {
+          this.isLoading = false
         })
     }
   }

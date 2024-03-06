@@ -34,7 +34,12 @@
       </ListButton>
     </div>
 
-    <ConfirmDeletionModal v-if="isDeleteModal" :task-title="task.title" />
+    <ConfirmDeletionModal
+      v-if="isDeleteModal"
+      :task-id="task.id"
+      :task-title="task.title"
+      :close-modal="() => (isDeleteModal = false)"
+    />
   </li>
 </template>
 
