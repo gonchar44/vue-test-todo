@@ -13,4 +13,5 @@ export interface Task {
   updatedAt: string
   priority: string
   is_done: boolean
+  subtasks?: Task[]
 }
