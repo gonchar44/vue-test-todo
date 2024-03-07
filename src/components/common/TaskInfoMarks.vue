@@ -1,15 +1,8 @@
 <template>
   <div class="absolute -top-2 left-2 flex gap-x-2">
-    <span
-      :class="`text-xs font-semibold uppercase text-white rounded-md pt-0.5 px-1 ${priorityColor}`"
-      >{{ Priority[priority] }}</span
-    >
-
-    <span
-      v-if="isDone"
-      class="bg-primary-success text-xs rounded-md font-semibold uppercase text-white pt-0.5 px-1"
-      >Done</span
-    >
+    <template v-for="(mark, markIndex) in marksData" :key="markIndex">
+      <span v-if="mark.isVisible" :class="mark.class">{{ mark.text }}</span>
+    </template>
   </div>
 </template>
 
@@ -27,6 +20,10 @@ export default defineComponent({
     isDone: {
       type: Boolean,
       required: true
+    },
+    subtasksAmount: {
+      type: Number,
+      default: 0
     }
   },
   setup(props) {
@@ -38,7 +35,26 @@ export default defineComponent({
       return color
     })
 
-    return { Priority, priorityColor }
+    const marksData = computed(() => [
+      {
+        text: `Priority: ${Priority[props.priority]}`,
+        isVisible: true,
+        class: `text-xs font-semibold uppercase text-white rounded-md pt-0.5 px-1 ${priorityColor.value}`
+      },
+      {
+        text: `Subtasks: ${props.subtasksAmount}`,
+        isVisible: props.subtasksAmount > 0,
+        class: 'bg-primary-dark text-xs rounded-md font-semibold uppercase text-white pt-0.5 px-1'
+      },
+      {
+        text: 'Completed',
+        isVisible: props.isDone,
+        class:
+          'bg-primary-success text-xs rounded-md font-semibold uppercase text-white pt-0.5 px-1'
+      }
+    ])
+
+    return { marksData }
   }
 })
 </script>

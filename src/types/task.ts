@@ -13,5 +13,9 @@ export interface Task {
   updatedAt: string
   priority: string
   is_done: boolean
-  subtasks?: Task[]
+  subtasks?: Subtask[]
+}
+
+export interface Subtask extends Omit<Task, 'subtasks'> {
+  parent_id: number
 }

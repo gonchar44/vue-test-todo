@@ -1,17 +1,19 @@
 <template>
   <div class="p-3">
     <ul v-if="sortedTasks.length > 0" class="w-12/12 max-w-[600px] flex flex-col gap-y-4 mx-auto">
-      <TasksListItem v-for="task in sortedTasks" :task="task" :key="task.id" />
+      <TasksListItem
+        v-for="task in sortedTasks"
+        :task="task"
+        :key="`${task.subtasks?.length > 0 ? 'subtask-' : ''}${task.id}`"
+      />
     </ul>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
-import { useTasksStore } from '@/stores/tasks'
-import { storeToRefs } from 'pinia'
+import { computed, defineComponent, PropType } from 'vue'
 import TasksListItem from '@/components/TasksListItem.vue'
-import { Task } from '@/types/task'
+import { Task, Subtask } from '@/types/task'
 import { sortTasks } from '@/helpers'
 
 export default defineComponent({
@@ -19,16 +21,16 @@ export default defineComponent({
   components: {
     TasksListItem
   },
-  setup() {
-    const tasksStore = useTasksStore()
-    const { fetchTasks } = tasksStore
-    const { isLoading, tasks } = storeToRefs(tasksStore)
+  props: {
+    isSubTasks: Boolean,
+    tasks: {
+      type: Array as PropType<Task[] | Subtask[]>
+    }
+  },
+  setup(props) {
+    const sortedTasks = computed<Task[]>(() => sortTasks(props.tasks || []))
 
-    const sortedTasks = computed<Task[]>(() => sortTasks(tasks.value))
-
-    fetchTasks()
-
-    return { isLoading, sortedTasks }
+    return { sortedTasks }
   }
 })
 </script>

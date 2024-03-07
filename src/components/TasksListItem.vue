@@ -1,39 +1,54 @@
 <template>
-  <li :class="`w-full flex justify-center gap-x-1 ease-in-out transition-all ${doneClass}`">
-    <DoneToggle :id="task.id" :is-done="task.is_done" />
+  <li :class="`w-full ${doneClass}`">
+    <div :class="`w-full flex justify-center gap-x-1 ease-in-out transition-all`">
+      <DoneToggle :id="task.id" :is-done="task.is_done" />
 
-    <!--    Task link-->
-    <router-link
-      :to="`/task/${task.id}`"
-      class="w-11/12 min-h-20 bg-primary-main rounded-md p-3 flex justify-between items-center relative"
-    >
-      <!--      Main task block-->
-      <div class="w-11/12 h-full flex flex-col justify-between">
-        <h3 class="text-xl font-bold truncate">{{ task.title }}</h3>
-        <TaskInfoMarks :priority="task.priority" :is-done="task.is_done" />
-        <span
-          v-if="task.subtitle"
-          class="block text-sm text-secondary-dark font-semibold truncate"
-          >{{ task.subtitle }}</span
+      <!--    Task link-->
+      <router-link
+        :to="`/task/${task.id}`"
+        class="w-11/12 min-h-20 bg-primary-main rounded-md p-3 flex justify-between items-center relative"
+      >
+        <!--      Main task block-->
+        <div class="w-11/12 h-full flex flex-col justify-between">
+          <h3 class="text-xl font-bold truncate">{{ task.title }}</h3>
+          <TaskInfoMarks
+            :priority="task.priority"
+            :is-done="task.is_done"
+            :subtasks-amount="task.subtasks?.length"
+          />
+          <span
+            v-if="task.subtitle"
+            class="block text-sm text-secondary-dark font-semibold truncate"
+            >{{ task.subtitle }}</span
+          >
+          <p v-if="isOpenedDetails">{{ task.notes }}</p>
+        </div>
+        <ChevronRightIcon class="w-5 h-5" />
+      </router-link>
+
+      <!--    Control buttons-->
+      <div class="h-20 flex flex-col gap-y-1">
+        <!--      Toggle details button-->
+        <ListButton
+          v-if="isDetails"
+          :title="isOpenedDetails ? 'Hide details' : 'Show details'"
+          :class="`bg-primary-light`"
+          @click="isUnwrapped = !isUnwrapped"
         >
-        <p v-if="isDetails">{{ task.notes }}</p>
+          <RectangleStackIcon
+            :class="`w-5 h-5 text-primary-dark mx-auto ${isOpenedDetails && 'rotate-180'}`"
+          />
+        </ListButton>
+
+        <!--      Deletion button-->
+        <ListButton class="bg-secondary-main" @click="isDeleteModal = true">
+          <TrashIcon class="w-5 h-5 text-white mx-auto" />
+        </ListButton>
       </div>
-      <ChevronRightIcon class="w-5 h-5" />
-    </router-link>
+    </div>
 
-    <!--    Control buttons-->
-    <div class="h-20 flex flex-col gap-y-1">
-      <!--      Toggle details button-->
-      <ListButton bg-color="bg-primary-light" @click="isUnwrapped = !isUnwrapped">
-        <RectangleStackIcon
-          :class="`w-5 h-5 text-primary-dark mx-auto ${isDetails && 'rotate-180'}`"
-        />
-      </ListButton>
-
-      <!--      Deletion button-->
-      <ListButton bg-color="bg-secondary-main" @click="isDeleteModal = true">
-        <TrashIcon class="w-5 h-5 text-white mx-auto" />
-      </ListButton>
+    <div v-if="isOpenedDetails && task.subtasks?.length" class="w-11/12 min-h-[20px] mx-auto">
+      <TasksList :tasks="task.subtasks" :is-sub-tasks="true" />
     </div>
 
     <SubmitModal
@@ -49,17 +64,18 @@
 
 <script lang="ts">
 import { computed, defineAsyncComponent, defineComponent, PropType, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { TrashIcon, RectangleStackIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
 import { Priority, Task } from '@/types/task'
 import DoneToggle from '@/components/common/DoneToggle.vue'
 import TaskInfoMarks from '@/components/common/TaskInfoMarks.vue'
 import ListButton from '@/components/common/ListButton.vue'
 import { useTasksStore } from '@/stores/tasks'
-import { storeToRefs } from 'pinia'
 
 export default defineComponent({
   name: 'TasksListItem',
   components: {
+    TasksList: defineAsyncComponent(() => import('./TasksList.vue')),
     SubmitModal: defineAsyncComponent(() => import('@/components/common/SubmitModal.vue')),
     DeletionTaskModal: defineAsyncComponent(() => import('@/components/DeletionTaskModal.vue')),
     DoneToggle,
@@ -84,10 +100,9 @@ export default defineComponent({
     // Local values
     const isUnwrapped = ref(false)
     const isDeleteModal = ref(false)
-    const isDetails = computed(
-      () => isUnwrapped.value && (props.task.notes || props.task.subtasks?.length)
-    )
-    const doneClass = computed(() => (props.task.is_done ? 'opacity-30 hover:opacity-80' : ''))
+    const isDetails = props.task.notes || props.task.subtasks?.length
+    const isOpenedDetails = computed(() => isUnwrapped.value && isDetails)
+    const doneClass = computed(() => (props.task.is_done ? 'opacity-30 hover:opacity-100' : ''))
 
     // Methods
     const closeModal = () => {
@@ -105,6 +120,7 @@ export default defineComponent({
       isUnwrapped,
       isDeleteModal,
       isDetails,
+      isOpenedDetails,
       doneClass,
       submitDeletion,
       closeModal
