@@ -9,7 +9,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import { Priority, Subtask, Task } from '@/types'
-import { isSubtask } from '@/helpers'
+import { checkIsSubtask } from '@/helpers'
 
 export default defineComponent({
   name: 'TaskInfoMarks',
@@ -20,6 +20,7 @@ export default defineComponent({
     }
   },
   setup(props) {
+    // Local values
     const priorityColor = computed(() => {
       let color = 'bg-secondary-dark' // default color
       if (props.task.priority === Priority.high) color = 'bg-secondary-main'
@@ -28,9 +29,8 @@ export default defineComponent({
       return color
     })
     const subtasksAmount = computed(
-      () => !isSubtask(props.task) && (props.task as Task).subtasks?.length
+      () => !checkIsSubtask(props.task) && (props.task as Task).subtasks?.length
     )
-
     const marksData = computed(() => [
       {
         text: `${Priority[props.task.priority]}`,

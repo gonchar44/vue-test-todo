@@ -62,16 +62,24 @@ export const useTasksStore = defineStore('tasks', {
         })
     },
     updateSubtaskIsDone({ parentId, subtaskId, newValue }: UpdateSubtaskIsDone) {
-      this.tasks = this.tasks.map((task) => {
-        return task.id === parentId
-          ? {
-              ...task,
-              subtasks: task.subtasks?.map((subtask: Subtask) =>
-                subtask.id === subtaskId ? { ...subtask, is_done: newValue } : subtask
-              )
-            }
-          : task
-      })
+      return axiosService
+        .put(`/subtasks/${subtaskId}`, { data: { is_done: newValue } })
+        .then(() => {
+          this.tasks = this.tasks.map((task) => {
+            return task.id === parentId
+              ? {
+                  ...task,
+                  subtasks: task.subtasks?.map((subtask: Subtask) =>
+                    subtask.id === subtaskId ? { ...subtask, is_done: newValue } : subtask
+                  )
+                }
+              : task
+          })
+        })
+        .catch((err) => {
+          // TODO: handle error here
+          console.error('delete task error', err)
+        })
     },
     updateTaskIsDone(taskId: number, newValue: boolean) {
       return axiosService

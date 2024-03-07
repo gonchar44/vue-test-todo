@@ -43,8 +43,8 @@
       </div>
     </div>
 
-    <div v-if="isOpenedDetails && task.subtasks?.length" class="w-11/12 min-h-[20px] mx-auto">
-      <TasksList :tasks="task.subtasks" :is-sub-tasks="true" />
+    <div v-if="isOpenedDetails && subtasks?.length" class="w-11/12 min-h-[20px] mx-auto">
+      <TasksList :tasks="subtasks" :is-sub-tasks="true" />
     </div>
 
     <SubmitModal
@@ -67,7 +67,7 @@ import DoneToggle from '@/components/common/DoneToggle.vue'
 import TaskInfoMarks from '@/components/common/TaskInfoMarks.vue'
 import ListButton from '@/components/common/ListButton.vue'
 import { useTasksStore } from '@/stores/tasks'
-import { isSubtask } from '@/helpers'
+import { checkIsSubtask } from '@/helpers'
 
 export default defineComponent({
   name: 'TasksListItem',
@@ -97,15 +97,15 @@ export default defineComponent({
     // Local values
     const isUnwrapped = ref(false)
     const isDeleteModal = ref(false)
+    const isSubtask = computed(() => checkIsSubtask(props.task))
+    const subtasks = computed(() => (!isSubtask.value ? (props.task as Task).subtasks : []))
     const isDetails = computed(() =>
-      isSubtask(props.task)
-        ? !!props.task.notes
-        : !!props.task.notes || ((props.task as Task).subtasks?.length ?? 0) > 0
+      isSubtask.value ? !!props.task.notes : !!props.task.notes || (subtasks.value?.length ?? 0) > 0
     )
     const isOpenedDetails = computed(() => isUnwrapped.value && isDetails)
     const doneClass = computed(() => (props.task.is_done ? 'opacity-30 hover:opacity-100' : ''))
     const taskLink = computed(() =>
-      isSubtask(props.task)
+      isSubtask.value
         ? `/task/${(props.task as Subtask).parent_id}/subtask/${props.task.id}`
         : `/task/${props.task.id}`
     )
@@ -116,7 +116,7 @@ export default defineComponent({
     }
 
     const submitDeletion = async () => {
-      isSubtask(props.task)
+      isSubtask.value
         ? await deleteSubtask((props.task as Subtask).parent_id, props.task.id)
         : await deleteTask(props.task.id)
       closeModal()
@@ -131,6 +131,7 @@ export default defineComponent({
       isOpenedDetails,
       doneClass,
       taskLink,
+      subtasks,
       submitDeletion,
       closeModal
     }

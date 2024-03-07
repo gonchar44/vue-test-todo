@@ -4,7 +4,7 @@
       <TasksListItem
         v-for="task in sortedTasks"
         :task="task"
-        :key="`${task.subtasks?.length > 0 ? 'subtask-' : ''}${task.id}`"
+        :key="`${getIsSubtask(task) ? 'subtask-' : ''}${task.id}`"
       />
     </ul>
   </div>
@@ -30,7 +30,9 @@ export default defineComponent({
   setup(props) {
     const sortedTasks = computed<Task[] | Subtask[]>(() => sortTasks(props.tasks || []))
 
-    return { sortedTasks }
+    const getIsSubtask = (task: Task | Subtask) => (task as Task)?.subtasks?.length
+
+    return { sortedTasks, getIsSubtask }
   }
 })
 </script>

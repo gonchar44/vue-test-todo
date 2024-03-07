@@ -1,5 +1,5 @@
 import { Subtask, Task } from '@/types'
 
-export const isSubtask = (task: Task | Subtask): boolean => {
+export const checkIsSubtask = (task: Task | Subtask): boolean => {
   return !!(task as Subtask).parent_id
 }

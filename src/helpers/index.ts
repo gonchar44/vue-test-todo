@@ -1,2 +1,2 @@
 export * from './sortTasks'
-export * from './isSubtask'
+export * from './checkIsSubtask'
