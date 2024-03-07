@@ -1,7 +1,7 @@
 <template>
   <li :class="`w-full ${doneClass}`">
     <div :class="`w-full flex justify-center gap-x-1 ease-in-out transition-all`">
-      <DoneToggle :id="task.id" :is-done="task.is_done" />
+      <DoneToggle :task="task" />
 
       <!--    Task link-->
       <router-link
@@ -11,11 +11,7 @@
         <!--      Main task block-->
         <div class="w-11/12 h-full flex flex-col justify-between">
           <h3 class="text-xl font-bold truncate">{{ task.title }}</h3>
-          <TaskInfoMarks
-            :priority="task.priority"
-            :is-done="task.is_done"
-            :subtasks-amount="task.subtasks?.length"
-          />
+          <TaskInfoMarks :task="task" />
           <span
             v-if="task.subtitle"
             class="block text-sm text-secondary-dark font-semibold truncate"
@@ -66,7 +62,7 @@
 import { computed, defineAsyncComponent, defineComponent, PropType, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { TrashIcon, RectangleStackIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
-import { Priority, Subtask, Task } from '@/types/task'
+import { Priority, Subtask, Task } from '@/types'
 import DoneToggle from '@/components/common/DoneToggle.vue'
 import TaskInfoMarks from '@/components/common/TaskInfoMarks.vue'
 import ListButton from '@/components/common/ListButton.vue'

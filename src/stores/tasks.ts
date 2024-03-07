@@ -1,16 +1,9 @@
 import { defineStore } from 'pinia'
 import axiosService from '@/services/axios'
-import { Pagination } from '@/types/pagination'
-import { Subtask, Task } from '@/types/task'
-
-interface State {
-  isLoading: boolean
-  pagination: Pagination | object
-  tasks: Task[]
-}
+import { Subtask, Task, TasksStoreState, UpdateSubtaskIsDone } from '@/types'
 
 export const useTasksStore = defineStore('tasks', {
-  state: (): State => ({
+  state: (): TasksStoreState => ({
     isLoading: false,
     pagination: {},
     tasks: []
@@ -68,7 +61,19 @@ export const useTasksStore = defineStore('tasks', {
           console.error('delete task error', err)
         })
     },
-    updateIsDone(taskId: number, newValue: boolean) {
+    updateSubtaskIsDone({ parentId, subtaskId, newValue }: UpdateSubtaskIsDone) {
+      this.tasks = this.tasks.map((task) => {
+        return task.id === parentId
+          ? {
+              ...task,
+              subtasks: task.subtasks?.map((subtask: Subtask) =>
+                subtask.id === subtaskId ? { ...subtask, is_done: newValue } : subtask
+              )
+            }
+          : task
+      })
+    },
+    updateTaskIsDone(taskId: number, newValue: boolean) {
       return axiosService
         .put(`/tasks/${taskId}?populate=subtasks`, { data: { is_done: newValue } })
         .then(() => {

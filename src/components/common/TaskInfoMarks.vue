@@ -8,47 +8,43 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { Priority } from '@/types/task'
+import { Priority, Subtask, Task } from '@/types'
+import { isSubtask } from '@/helpers'
 
 export default defineComponent({
   name: 'TaskInfoMarks',
   props: {
-    priority: {
-      type: String as PropType<Priority>,
+    task: {
+      type: Object as PropType<Task | Subtask>,
       required: true
-    },
-    isDone: {
-      type: Boolean,
-      required: true
-    },
-    subtasksAmount: {
-      type: Number,
-      default: 0
     }
   },
   setup(props) {
     const priorityColor = computed(() => {
       let color = 'bg-secondary-dark' // default color
-      if (props.priority === Priority.high) color = 'bg-secondary-main'
-      if (props.priority === Priority.medium) color = 'bg-secondary-light'
+      if (props.task.priority === Priority.high) color = 'bg-secondary-main'
+      if (props.task.priority === Priority.medium) color = 'bg-secondary-light'
 
       return color
     })
+    const subtasksAmount = computed(
+      () => !isSubtask(props.task) && (props.task as Task).subtasks?.length
+    )
 
     const marksData = computed(() => [
       {
-        text: `${Priority[props.priority]}`,
+        text: `${Priority[props.task.priority]}`,
         isVisible: true,
         class: `text-xs font-semibold uppercase text-white rounded-md pt-0.5 px-1 ${priorityColor.value}`
       },
       {
-        text: `Subtasks: ${props.subtasksAmount}`,
-        isVisible: props.subtasksAmount > 0,
+        text: `Subtasks: ${subtasksAmount.value}`,
+        isVisible: subtasksAmount.value && subtasksAmount.value > 0,
         class: 'bg-primary-dark text-xs rounded-md font-semibold uppercase text-white pt-0.5 px-1'
       },
       {
-        text: 'Completed',
-        isVisible: props.isDone,
+        text: 'Done',
+        isVisible: props.task.is_done,
         class:
           'bg-primary-success text-xs rounded-md font-semibold uppercase text-white pt-0.5 px-1'
       }

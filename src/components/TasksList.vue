@@ -13,7 +13,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
 import TasksListItem from '@/components/TasksListItem.vue'
-import { Task, Subtask } from '@/types/task'
+import { Task, Subtask } from '@/types'
 import { sortTasks } from '@/helpers'
 
 export default defineComponent({

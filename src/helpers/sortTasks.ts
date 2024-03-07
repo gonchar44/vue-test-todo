@@ -1,4 +1,4 @@
-import { Subtask, Task } from '@/types/task'
+import { Subtask, Task } from '@/types'
 
 export const sortTasks = (tasks: Task[] | Subtask[]): Task[] | Subtask[] => {
   return [...tasks].sort((a: Task | Subtask, b: Task | Subtask) => {
