@@ -34,12 +34,12 @@ export const useTasksStore = defineStore('tasks', {
           this.isLoading = false
         })
     },
-    deleteTask(id: number) {
+    deleteTask(taskId: number) {
       this.isLoading = true
       return axiosService
-        .delete(`/tasks/${id}`)
+        .delete(`/tasks/${taskId}`)
         .then(() => {
-          this.tasks = this.tasks.filter((task) => task.id !== id)
+          this.tasks = this.tasks.filter((task) => task.id !== taskId)
         })
         .catch((err) => {
           // TODO: handle error here
@@ -47,6 +47,19 @@ export const useTasksStore = defineStore('tasks', {
         })
         .finally(() => {
           this.isLoading = false
+        })
+    },
+    updateIsDone(taskId: number, newValue: boolean) {
+      return axiosService
+        .put(`/tasks/${taskId}?populate=subtasks`, { data: { is_done: newValue } })
+        .then(() => {
+          this.tasks = this.tasks.map((task): Task => {
+            return task.id === taskId ? { ...task, is_done: newValue } : task
+          })
+        })
+        .catch((err) => {
+          // TODO: handle error here
+          console.error('delete task error', err)
         })
     }
   }

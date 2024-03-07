@@ -1,5 +1,7 @@
 <template>
-  <li class="w-full flex justify-center gap-x-1">
+  <li :class="`w-full flex justify-center gap-x-1 ease-in-out transition-all ${doneClass}`">
+    <DoneToggle :id="task.id" :is-done="task.is_done" />
+
     <!--    Task link-->
     <router-link
       :to="`/task/${task.id}`"
@@ -8,7 +10,7 @@
       <!--      Main task block-->
       <div class="w-11/12 h-full flex flex-col justify-between">
         <h3 class="text-xl font-bold truncate">{{ task.title }}</h3>
-        <PriorityMark :priority="task.priority" />
+        <TaskInfoMarks :priority="task.priority" :is-done="task.is_done" />
         <span
           v-if="task.subtitle"
           class="block text-sm text-secondary-dark font-semibold truncate"
@@ -49,7 +51,8 @@
 import { computed, defineAsyncComponent, defineComponent, PropType, ref } from 'vue'
 import { TrashIcon, RectangleStackIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
 import { Priority, Task } from '@/types/task'
-import PriorityMark from '@/components/PriorityMark.vue'
+import DoneToggle from '@/components/common/DoneToggle.vue'
+import TaskInfoMarks from '@/components/common/TaskInfoMarks.vue'
 import ListButton from '@/components/common/ListButton.vue'
 import { useTasksStore } from '@/stores/tasks'
 import { storeToRefs } from 'pinia'
@@ -59,8 +62,9 @@ export default defineComponent({
   components: {
     SubmitModal: defineAsyncComponent(() => import('@/components/common/SubmitModal.vue')),
     DeletionTaskModal: defineAsyncComponent(() => import('@/components/DeletionTaskModal.vue')),
+    DoneToggle,
     TrashIcon,
-    PriorityMark,
+    TaskInfoMarks,
     ListButton,
     RectangleStackIcon,
     ChevronRightIcon
@@ -83,6 +87,7 @@ export default defineComponent({
     const isDetails = computed(
       () => isUnwrapped.value && (props.task.notes || props.task.subtasks?.length)
     )
+    const doneClass = computed(() => (props.task.is_done ? 'opacity-30 hover:opacity-80' : ''))
 
     // Methods
     const closeModal = () => {
@@ -100,6 +105,7 @@ export default defineComponent({
       isUnwrapped,
       isDeleteModal,
       isDetails,
+      doneClass,
       submitDeletion,
       closeModal
     }
