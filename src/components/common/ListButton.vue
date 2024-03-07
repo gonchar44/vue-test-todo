@@ -1,5 +1,5 @@
 <template>
-  <button :class="`w-10 h-10 rounded-md leading-5 ${bgColor} active:opacity-40`">
+  <button :class="`w-10 h-10 rounded-md leading-5 active:opacity-40`">
     <slot />
   </button>
 </template>
@@ -8,9 +8,6 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'ListButton',
-  props: {
-    bgColor: String
-  }
+  name: 'ListButton'
 })
 </script>
