@@ -5,7 +5,7 @@
 
       <!--    Task link-->
       <router-link
-        :to="`/task/${task.id}`"
+        :to="taskLink"
         class="w-11/12 min-h-20 bg-primary-main rounded-md p-3 flex justify-between items-center relative"
       >
         <!--      Main task block-->
@@ -66,11 +66,12 @@
 import { computed, defineAsyncComponent, defineComponent, PropType, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { TrashIcon, RectangleStackIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
-import { Priority, Task } from '@/types/task'
+import { Priority, Subtask, Task } from '@/types/task'
 import DoneToggle from '@/components/common/DoneToggle.vue'
 import TaskInfoMarks from '@/components/common/TaskInfoMarks.vue'
 import ListButton from '@/components/common/ListButton.vue'
 import { useTasksStore } from '@/stores/tasks'
+import { isSubtask } from '@/helpers'
 
 export default defineComponent({
   name: 'TasksListItem',
@@ -87,22 +88,31 @@ export default defineComponent({
   },
   props: {
     task: {
-      type: Object as PropType<Task>,
+      type: Object as PropType<Task | Subtask>,
       required: true
     }
   },
   setup(props) {
     // Store
     const tasksStore = useTasksStore()
-    const { deleteTask } = tasksStore
+    const { deleteSubtask, deleteTask } = tasksStore
     const { isLoading } = storeToRefs(tasksStore)
 
     // Local values
     const isUnwrapped = ref(false)
     const isDeleteModal = ref(false)
-    const isDetails = props.task.notes || props.task.subtasks?.length
+    const isDetails = computed(() =>
+      isSubtask(props.task)
+        ? !!props.task.notes
+        : !!props.task.notes || ((props.task as Task).subtasks?.length ?? 0) > 0
+    )
     const isOpenedDetails = computed(() => isUnwrapped.value && isDetails)
     const doneClass = computed(() => (props.task.is_done ? 'opacity-30 hover:opacity-100' : ''))
+    const taskLink = computed(() =>
+      isSubtask(props.task)
+        ? `/task/${(props.task as Subtask).parent_id}/subtask/${props.task.id}`
+        : `/task/${props.task.id}`
+    )
 
     // Methods
     const closeModal = () => {
@@ -110,7 +120,9 @@ export default defineComponent({
     }
 
     const submitDeletion = async () => {
-      await deleteTask(props.task.id)
+      isSubtask(props.task)
+        ? await deleteSubtask((props.task as Subtask).parent_id, props.task.id)
+        : await deleteTask(props.task.id)
       closeModal()
     }
 
@@ -122,6 +134,7 @@ export default defineComponent({
       isDetails,
       isOpenedDetails,
       doneClass,
+      taskLink,
       submitDeletion,
       closeModal
     }

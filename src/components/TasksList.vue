@@ -28,7 +28,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const sortedTasks = computed<Task[]>(() => sortTasks(props.tasks || []))
+    const sortedTasks = computed<Task[] | Subtask[]>(() => sortTasks(props.tasks || []))
 
     return { sortedTasks }
   }

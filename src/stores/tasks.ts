@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import axiosService from '@/services/axios'
 import { Pagination } from '@/types/pagination'
-import { Task } from '@/types/task'
+import { Subtask, Task } from '@/types/task'
 
 interface State {
   isLoading: boolean
@@ -47,6 +47,25 @@ export const useTasksStore = defineStore('tasks', {
         })
         .finally(() => {
           this.isLoading = false
+        })
+    },
+    deleteSubtask(parentId: number, subtaskId: number) {
+      this.isLoading = true
+      return axiosService
+        .delete(`/subtasks/${subtaskId}`)
+        .then(() => {
+          this.tasks = this.tasks.map((task) => {
+            return task.id === parentId
+              ? {
+                  ...task,
+                  subtasks: task.subtasks?.filter((subtask: Subtask) => subtask.id !== subtaskId)
+                }
+              : task
+          })
+        })
+        .catch((err) => {
+          // TODO: handle error here
+          console.error('delete task error', err)
         })
     },
     updateIsDone(taskId: number, newValue: boolean) {

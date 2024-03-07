@@ -37,7 +37,7 @@ export default defineComponent({
 
     const marksData = computed(() => [
       {
-        text: `Priority: ${Priority[props.priority]}`,
+        text: `${Priority[props.priority]}`,
         isVisible: true,
         class: `text-xs font-semibold uppercase text-white rounded-md pt-0.5 px-1 ${priorityColor.value}`
       },
