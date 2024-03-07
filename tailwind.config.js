@@ -3,11 +3,23 @@ module.exports = {
   content: ['./src/**/*.{vue,js,ts}'],
   theme: {
     extend: {
+      colors: {
+        primary: {
+          main: '#f0e1d8',
+          dark: '#2a2c2e',
+          light: '#e0e0e0'
+        },
+        secondary: {
+          main: '#ff6054',
+          dark: '#878787',
+          light: '#c9be67'
+        }
+      },
       fontFamily: {
         monospace: 'monospace',
         nunito: 'Nunito'
       }
     }
   },
-  plugins: []
+  plugins: [require('@headlessui/tailwindcss')]
 }
