@@ -19,6 +19,7 @@
       <slot></slot>
     </template>
     <MessageBlock v-else> The {{ !isNested ? 'tasks' : 'subtasks' }} list is empty. </MessageBlock>
+    <CircleLoader v-if="isLoading" />
 
     <ModalTemplate
       v-if="isCreateModalOpened"
@@ -33,18 +34,22 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType, ref } from 'vue'
+import { PlusIcon } from '@heroicons/vue/24/outline'
+import { storeToRefs } from 'pinia'
 import PrimaryButton from '@/components/common/PrimaryButton.vue'
 import TasksListItem from '@/components/TasksListItem.vue'
-import { PlusIcon } from '@heroicons/vue/24/outline'
 import { Task, Subtask } from '@/types'
 import { sortTasks } from '@/helpers'
 import ModalTemplate from '@/components/common/ModalTemplate.vue'
 import TaskForm from '@/components/TaskForm.vue'
 import MessageBlock from '@/components/common/MessageBlock.vue'
+import CircleLoader from '@/components/common/CircleLoader.vue'
+import { useTasksStore } from '@/stores/tasks'
 
 export default defineComponent({
   name: 'TasksList',
   components: {
+    CircleLoader,
     PrimaryButton,
     TasksListItem,
     PlusIcon,
@@ -60,6 +65,8 @@ export default defineComponent({
   },
   setup(props) {
     // Local values
+    const tasksStore = useTasksStore()
+    const { isLoading } = storeToRefs(tasksStore)
     const isCreateModalOpened = ref(false)
     const sortedTasks = computed<Task[] | Subtask[]>(() => sortTasks(props.tasks || []))
 
@@ -68,7 +75,7 @@ export default defineComponent({
       isCreateModalOpened.value = false
     }
 
-    return { isCreateModalOpened, sortedTasks, closeModal }
+    return { isLoading, isCreateModalOpened, sortedTasks, closeModal }
   }
 })
 </script>
