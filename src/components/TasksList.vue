@@ -8,13 +8,16 @@
       <span>{{ isNested ? 'Subtask' : 'Task' }}</span>
     </PrimaryButton>
 
-    <ul v-if="sortedTasks.length > 0" class="w-full flex flex-col gap-y-4">
-      <TasksListItem
-        v-for="task in sortedTasks"
-        :task="task"
-        :key="`${isNested ? 'subtask-' : ''}${task.id}`"
-      />
-    </ul>
+    <template v-if="sortedTasks.length > 0">
+      <ul class="w-full flex flex-col gap-y-4">
+        <TasksListItem
+          v-for="task in sortedTasks"
+          :task="task"
+          :key="`${isNested ? 'subtask-' : ''}${task.id}`"
+        />
+      </ul>
+      <slot></slot>
+    </template>
     <MessageBlock v-else> The {{ !isNested ? 'tasks' : 'subtasks' }} list is empty. </MessageBlock>
 
     <ModalTemplate

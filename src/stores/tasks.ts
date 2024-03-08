@@ -6,18 +6,26 @@ export const useTasksStore = defineStore('tasks', {
   state: (): TasksStoreState => ({
     isLoading: false,
     isError: false,
-    pagination: {},
+    pagination: {
+      page: 1,
+      pageSize: 0,
+      pageCount: 0,
+      total: 0
+    },
     tasks: []
   }),
   actions: {
-    fetchTasks() {
+    goNextPage() {
+      this.pagination.page += 1
+    },
+    fetchTasks(page: number) {
       this.isLoading = true
       axiosService
-        .get('/tasks?populate=subtasks')
+        .get(`/tasks?populate=subtasks&pagination[page]=${page}`)
         .then((res) => {
           const { data, meta } = res.data
 
-          this.tasks = data
+          this.tasks = [...this.tasks, ...data]
           this.pagination = meta.pagination
         })
         .catch(() => {
