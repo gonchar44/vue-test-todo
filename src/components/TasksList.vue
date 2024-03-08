@@ -29,12 +29,15 @@
 </template>
 
 <script lang="ts">
-import { computed, defineAsyncComponent, defineComponent, PropType, ref } from 'vue'
+import { computed, defineComponent, PropType, ref } from 'vue'
 import PrimaryButton from '@/components/common/PrimaryButton.vue'
 import TasksListItem from '@/components/TasksListItem.vue'
 import { PlusIcon } from '@heroicons/vue/24/outline'
 import { Task, Subtask } from '@/types'
 import { sortTasks } from '@/helpers'
+import ModalTemplate from '@/components/common/ModalTemplate.vue'
+import TaskForm from '@/components/TaskForm.vue'
+import MessageBlock from '@/components/common/MessageBlock.vue'
 
 export default defineComponent({
   name: 'TasksList',
@@ -42,9 +45,9 @@ export default defineComponent({
     PrimaryButton,
     TasksListItem,
     PlusIcon,
-    ModalTemplate: defineAsyncComponent(() => import('@/components/common/ModalTemplate.vue')),
-    TaskForm: defineAsyncComponent(() => import('@/components/TaskForm.vue')),
-    MessageBlock: defineAsyncComponent(() => import('@/components/common/MessageBlock.vue'))
+    ModalTemplate,
+    TaskForm,
+    MessageBlock
   },
   props: {
     isNested: Boolean,
