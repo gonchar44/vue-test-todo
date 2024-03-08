@@ -7,7 +7,6 @@ import '@/assets/styles/global.css'
 
 const app = createApp(App)
 
-console.log('test log')
 app.use(pinia)
 app.use(router)
 
