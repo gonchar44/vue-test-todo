@@ -15,14 +15,7 @@
         :key="`${isNested ? 'subtask-' : ''}${task.id}`"
       />
     </ul>
-    <div
-      v-else
-      class="w-full h-56 leading-8 bg-primary-main rounded-md flex justify-center items-center"
-    >
-      <p class="max-w-max font-semibold">
-        The {{ !isNested ? 'tasks' : 'subtasks' }} list is empty.
-      </p>
-    </div>
+    <MessageBlock v-else> The {{ !isNested ? 'tasks' : 'subtasks' }} list is empty. </MessageBlock>
 
     <ModalTemplate
       v-if="isCreateModalOpened"
@@ -50,7 +43,8 @@ export default defineComponent({
     TasksListItem,
     PlusIcon,
     ModalTemplate: defineAsyncComponent(() => import('@/components/common/ModalTemplate.vue')),
-    TaskForm: defineAsyncComponent(() => import('@/components/TaskForm.vue'))
+    TaskForm: defineAsyncComponent(() => import('@/components/TaskForm.vue')),
+    MessageBlock: defineAsyncComponent(() => import('@/components/common/MessageBlock.vue'))
   },
   props: {
     isNested: Boolean,

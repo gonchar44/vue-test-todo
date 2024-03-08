@@ -9,7 +9,7 @@ import { useTasksStore } from '@/stores/tasks'
 import { storeToRefs } from 'pinia'
 
 export default defineComponent({
-  name: 'HomeView',
+  name: 'MainView',
   components: {
     TasksList
   },
