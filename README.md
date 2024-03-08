@@ -1,5 +1,11 @@
 # vue-test-todo
 
+### Attention!
+To run the project you need node version 18. There is .nvmrc file in the root of project, so you can just run
+```
+nvm use
+```
+
 ## Project setup
 ```
 yarn install
