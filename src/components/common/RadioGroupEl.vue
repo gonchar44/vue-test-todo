@@ -48,6 +48,7 @@
 <script lang="ts">
 import { defineComponent, PropType, ref, SetupContext } from 'vue'
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
+import { Option } from '@/types'
 
 export default defineComponent({
   name: 'RadioGroupEl',
@@ -69,8 +70,8 @@ export default defineComponent({
   setup(props, { emit }: SetupContext) {
     const selected = ref(props.options.find(({ value }) => value === props.value))
 
-    const onInput = (plan: any) => {
-      emit('on-select', plan.value)
+    const onInput = (option: Option) => {
+      emit('on-select', option.value)
     }
 
     return { selected, onInput }

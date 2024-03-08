@@ -1,25 +1,46 @@
 <template>
-  <div class="p-3">
-    <ul v-if="sortedTasks.length > 0" class="w-12/12 max-w-[600px] flex flex-col gap-y-4 mx-auto">
+  <div class="w-full max-w-[600px] flex flex-col p-3 gap-y-8 mx-auto">
+    <PrimaryButton v-if="!isSubTasks" class="ml-7" @on-click="isCreateModalOpened = true">
+      <PlusIcon class="w-5 h-5 text-primary-dark" />
+      <span>Task</span>
+    </PrimaryButton>
+
+    <ul v-if="sortedTasks.length > 0" class="w-full flex flex-col gap-y-4">
       <TasksListItem
         v-for="task in sortedTasks"
         :task="task"
         :key="`${getIsSubtask(task) ? 'subtask-' : ''}${task.id}`"
       />
     </ul>
+
+    <ModalTemplate
+      v-if="isCreateModalOpened"
+      :is-form="true"
+      :is-hidden-buttons="true"
+      title="Create task"
+      @on-close="closeModal"
+    >
+      <CreateTaskForm @on-close="closeModal" />
+    </ModalTemplate>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, PropType, ref } from 'vue'
+import PrimaryButton from '@/components/common/PrimaryButton.vue'
 import TasksListItem from '@/components/TasksListItem.vue'
+import { PlusIcon } from '@heroicons/vue/24/outline'
 import { Task, Subtask } from '@/types'
 import { sortTasks } from '@/helpers'
 
 export default defineComponent({
   name: 'TasksList',
   components: {
-    TasksListItem
+    PrimaryButton,
+    TasksListItem,
+    PlusIcon,
+    ModalTemplate: defineAsyncComponent(() => import('@/components/common/ModalTemplate.vue')),
+    CreateTaskForm: defineAsyncComponent(() => import('@/components/CreateTaskForm.vue'))
   },
   props: {
     isSubTasks: Boolean,
@@ -28,11 +49,18 @@ export default defineComponent({
     }
   },
   setup(props) {
+    // Local values
+    const isCreateModalOpened = ref(false)
     const sortedTasks = computed<Task[] | Subtask[]>(() => sortTasks(props.tasks || []))
 
+    // Methods
     const getIsSubtask = (task: Task | Subtask) => (task as Task)?.subtasks?.length
 
-    return { sortedTasks, getIsSubtask }
+    const closeModal = () => {
+      isCreateModalOpened.value = false
+    }
+
+    return { isCreateModalOpened, sortedTasks, getIsSubtask, closeModal }
   }
 })
 </script>
