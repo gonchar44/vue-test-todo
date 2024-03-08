@@ -3,7 +3,8 @@
     <label
       v-if="label"
       :for="name"
-      :class="`font-semibold ${!!errorMessage && 'text-secondary-main'}`"
+      class="font-semibold"
+      :class="[!!errorMessage && 'text-secondary-main']"
       >{{ label }}</label
     >
     <div class="w-full relative">

@@ -1,6 +1,6 @@
 <template>
-  <li :class="`w-full ${doneClass}`">
-    <div :class="`w-full flex justify-center gap-x-1 ease-in-out transition-all`">
+  <li class="w-full" :class="[task.is_done && 'opacity-30 hover:opacity-100']">
+    <div class="w-full flex justify-center gap-x-1 ease-in-out transition-all">
       <DoneToggle :task="task" />
 
       <!--    Task -->
@@ -27,11 +27,12 @@
         <ListButton
           v-if="isDetails"
           :title="isOpenedDetails ? 'Hide details' : 'Show details'"
-          :class="`bg-primary-light`"
+          class="bg-primary-light"
           @click="isUnwrapped = !isUnwrapped"
         >
           <RectangleStackIcon
-            :class="`w-5 h-5 text-primary-dark mx-auto ${isOpenedDetails && 'rotate-180'}`"
+            class="w-5 h-5 text-primary-dark mx-auto"
+            :class="[isOpenedDetails && 'rotate-180']"
           />
         </ListButton>
 
@@ -104,7 +105,6 @@ export default defineComponent({
       isSubtask.value ? !!props.task.notes : !!props.task.notes || (subtasks.value?.length ?? 0) > 0
     )
     const isOpenedDetails = computed(() => isUnwrapped.value && isDetails)
-    const doneClass = computed(() => (props.task.is_done ? 'opacity-30 hover:opacity-100' : ''))
     const taskLink = computed(() =>
       isSubtask.value
         ? `/task/${(props.task as Subtask).parent_id}/subtask/${props.task.id}`
@@ -130,7 +130,6 @@ export default defineComponent({
       isDeleteModalOpened,
       isDetails,
       isOpenedDetails,
-      doneClass,
       taskLink,
       subtasks,
       submitDeletion,
