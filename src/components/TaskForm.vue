@@ -46,9 +46,9 @@
           {{ !!task ? 'Update' : 'Create' }}
         </PrimaryButton>
 
-        <SecondaryButton @on-click="task ? (isEditing = false) : closeModal"
-          >Cancel</SecondaryButton
-        >
+        <SecondaryButton @on-click="task ? cancelEditing() : closeModal()">
+          Cancel
+        </SecondaryButton>
       </template>
     </div>
   </form>
@@ -96,7 +96,7 @@ export default defineComponent({
     const tasksStore = useTasksStore()
     const { createTask, updateTask, createSubtask, updateSubtask } = tasksStore
     const { isLoading } = storeToRefs(tasksStore)
-    const { errors, handleSubmit, meta } = useForm({
+    const { errors, handleSubmit, resetForm, meta } = useForm({
       validationSchema: taskValidationSchema
     })
     const isFormValid = computed(() => meta.value.valid)
@@ -146,6 +146,11 @@ export default defineComponent({
       }
     }
 
+    const cancelEditing = () => {
+      isEditing.value = false
+      resetForm()
+    }
+
     const onSubmit = handleSubmit(async (values) => {
       if (!isFormValid.value) return
 
@@ -171,6 +176,7 @@ export default defineComponent({
       priority,
       errors,
       isFormValid,
+      cancelEditing,
       closeModal,
       onSubmit
     }
