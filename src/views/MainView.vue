@@ -1,5 +1,7 @@
 <template>
-  <TasksList :tasks="tasks" />
+  <TasksList :tasks="tasks">
+    <div v-if="isThereNextPage" ref="target">Load More...</div>
+  </TasksList>
 
   <ModalTemplate v-if="isTasksError" title="Error!" @on-close="cleanError">
     <p class="my-7" v-html="ErrorsMessages.SOMETHING_WENT_WRONG"></p>
@@ -7,31 +9,36 @@
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, ref } from 'vue'
 import TasksList from '@/components/TasksList.vue'
 import { useTasksStore } from '@/stores/tasks'
 import { storeToRefs } from 'pinia'
 import { ErrorsMessages } from '@/types'
+import { useIntersectionObserver } from '@vueuse/core'
 
 export default defineComponent({
   name: 'MainView',
-  computed: {
-    ErrorsMessages() {
-      return ErrorsMessages
-    }
-  },
   components: {
     TasksList,
     ModalTemplate: defineAsyncComponent(() => import('@/components/common/ModalTemplate.vue'))
   },
   setup() {
+    const target = ref(null)
     const tasksStore = useTasksStore()
-    const { fetchTasks, cleanError } = tasksStore
-    const { isError: isTasksError, tasks } = storeToRefs(tasksStore)
+    const { fetchTasks, goNextPage, cleanError } = tasksStore
+    const { pagination, isError: isTasksError, tasks } = storeToRefs(tasksStore)
+    const isThereNextPage = computed(() => pagination.value.page < pagination.value.pageCount)
 
-    fetchTasks()
+    fetchTasks(1)
 
-    return { isTasksError, tasks, cleanError }
+    useIntersectionObserver(target, ([{ isIntersecting }]) => {
+      if (isIntersecting && isThereNextPage) {
+        goNextPage()
+        fetchTasks(pagination.value.page)
+      }
+    })
+
+    return { ErrorsMessages, isThereNextPage, isTasksError, tasks, cleanError, target }
   }
 })
 </script>
