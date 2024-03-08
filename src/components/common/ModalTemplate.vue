@@ -28,29 +28,23 @@
               class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
             >
               <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
-                Are you sure?
+                {{ title }}
               </DialogTitle>
 
               <slot />
 
-              <div class="mt-4 flex gap-x-5">
-                <button
-                  type="button"
-                  :disabled="isLoading"
-                  class="font-semibold inline-flex justify-center rounded-md border border-transparent bg-secondary-main px-4 py-2 text-sm font-medium text-white disabled:opacity-40 hover:opacity-90 active:opacity-40"
-                  @click="onSubmit"
+              <div v-if="!isHiddenButtons" class="flex gap-x-5 mt-4">
+                <PrimaryButton
+                  v-if="submitText"
+                  :is-disabled="isLoading"
+                  @on-click="$emit('on-submit')"
                 >
-                  Delete
-                </button>
+                  {{ submitText }}
+                </PrimaryButton>
 
-                <button
-                  type="button"
-                  :disabled="isLoading"
-                  class="font-semibold disabled:opacity-40 hover:opacity-90 active:opacity-40"
-                  @click="onClose"
-                >
+                <SecondaryButton :disabled="isLoading" @on-click="onClose">
                   Cancel
-                </button>
+                </SecondaryButton>
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -61,28 +55,38 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, SetupContext } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
+import PrimaryButton from '@/components/common/PrimaryButton.vue'
+import SecondaryButton from '@/components/common/SecondaryButton.vue'
 
 export default defineComponent({
-  name: 'SubmitModal',
+  name: 'ModalTemplate',
   components: {
     TransitionRoot,
     TransitionChild,
     Dialog,
     DialogPanel,
-    DialogTitle
+    DialogTitle,
+    PrimaryButton,
+    SecondaryButton
   },
   props: {
     isLoading: Boolean,
-    onSubmit: {
-      type: Function,
+    isForm: Boolean,
+    title: {
+      type: String,
       required: true
     },
-    onClose: {
-      type: Function,
-      required: true
+    submitText: String,
+    isHiddenButtons: Boolean
+  },
+  setup(_, { emit }: SetupContext) {
+    const onClose = () => {
+      emit('on-close')
     }
+
+    return { onClose }
   }
 })
 </script>

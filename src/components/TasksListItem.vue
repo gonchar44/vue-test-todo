@@ -3,9 +3,8 @@
     <div :class="`w-full flex justify-center gap-x-1 ease-in-out transition-all`">
       <DoneToggle :task="task" />
 
-      <!--    Task link-->
-      <router-link
-        :to="taskLink"
+      <!--    Task -->
+      <div
         class="w-11/12 min-h-20 bg-primary-main rounded-md p-3 flex justify-between items-center relative"
       >
         <!--      Main task block-->
@@ -20,7 +19,7 @@
           <p v-if="isOpenedDetails">{{ task.notes }}</p>
         </div>
         <ChevronRightIcon class="w-5 h-5" />
-      </router-link>
+      </div>
 
       <!--    Control buttons-->
       <div class="h-20 flex flex-col gap-y-1">
@@ -37,7 +36,7 @@
         </ListButton>
 
         <!--      Deletion button-->
-        <ListButton class="bg-secondary-main" @click="isDeleteModal = true">
+        <ListButton class="bg-secondary-main" @click="isDeleteModalOpened = true">
           <TrashIcon class="w-5 h-5 text-white mx-auto" />
         </ListButton>
       </div>
@@ -47,14 +46,16 @@
       <TasksList :tasks="subtasks" :is-sub-tasks="true" />
     </div>
 
-    <SubmitModal
-      v-if="isDeleteModal"
+    <ModalTemplate
+      v-if="isDeleteModalOpened"
+      title="Are you sure?"
+      submit-text="Delete"
       :is-loading="isLoading"
-      :on-submit="submitDeletion"
-      :on-close="closeModal"
+      @on-submit="submitDeletion"
+      @on-close="closeModal"
     >
       <DeletionTaskModal :task-id="task.id" :task-title="task.title" :close-modal="closeModal" />
-    </SubmitModal>
+    </ModalTemplate>
   </li>
 </template>
 
@@ -73,7 +74,7 @@ export default defineComponent({
   name: 'TasksListItem',
   components: {
     TasksList: defineAsyncComponent(() => import('./TasksList.vue')),
-    SubmitModal: defineAsyncComponent(() => import('@/components/common/SubmitModal.vue')),
+    ModalTemplate: defineAsyncComponent(() => import('@/components/common/ModalTemplate.vue')),
     DeletionTaskModal: defineAsyncComponent(() => import('@/components/DeletionTaskModal.vue')),
     DoneToggle,
     TrashIcon,
@@ -96,7 +97,7 @@ export default defineComponent({
 
     // Local values
     const isUnwrapped = ref(false)
-    const isDeleteModal = ref(false)
+    const isDeleteModalOpened = ref(false)
     const isSubtask = computed(() => checkIsSubtask(props.task))
     const subtasks = computed(() => (!isSubtask.value ? (props.task as Task).subtasks : []))
     const isDetails = computed(() =>
@@ -112,7 +113,7 @@ export default defineComponent({
 
     // Methods
     const closeModal = () => {
-      isDeleteModal.value = false
+      isDeleteModalOpened.value = false
     }
 
     const submitDeletion = async () => {
@@ -126,7 +127,7 @@ export default defineComponent({
       Priority,
       isLoading,
       isUnwrapped,
-      isDeleteModal,
+      isDeleteModalOpened,
       isDetails,
       isOpenedDetails,
       doneClass,

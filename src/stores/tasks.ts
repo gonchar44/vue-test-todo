@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axiosService from '@/services/axios'
-import { Subtask, Task, TasksStoreState, UpdateSubtaskIsDone } from '@/types'
+import { Subtask, Task, TaskFormFields, TasksStoreState, UpdateSubtaskIsDone } from '@/types'
 
 export const useTasksStore = defineStore('tasks', {
   state: (): TasksStoreState => ({
@@ -27,6 +27,21 @@ export const useTasksStore = defineStore('tasks', {
           this.isLoading = false
         })
     },
+    createTask(data: TaskFormFields) {
+      this.isLoading = true
+      return axiosService
+        .post('/tasks', { data })
+        .then((res) => {
+          this.tasks.push(res.data)
+        })
+        .catch((err) => {
+          // TODO: handle error here
+          console.error('error log', err)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
     deleteTask(taskId: number) {
       this.isLoading = true
       return axiosService
@@ -36,7 +51,7 @@ export const useTasksStore = defineStore('tasks', {
         })
         .catch((err) => {
           // TODO: handle error here
-          console.error('delete task error', err)
+          console.error('error log', err)
         })
         .finally(() => {
           this.isLoading = false
@@ -58,7 +73,10 @@ export const useTasksStore = defineStore('tasks', {
         })
         .catch((err) => {
           // TODO: handle error here
-          console.error('delete task error', err)
+          console.error('error log', err)
+        })
+        .finally(() => {
+          this.isLoading = false
         })
     },
     updateSubtaskIsDone({ parentId, subtaskId, newValue }: UpdateSubtaskIsDone) {
@@ -78,7 +96,7 @@ export const useTasksStore = defineStore('tasks', {
         })
         .catch((err) => {
           // TODO: handle error here
-          console.error('delete task error', err)
+          console.error('error log', err)
         })
     },
     updateTaskIsDone(taskId: number, newValue: boolean) {
@@ -91,7 +109,7 @@ export const useTasksStore = defineStore('tasks', {
         })
         .catch((err) => {
           // TODO: handle error here
-          console.error('delete task error', err)
+          console.error('error log', err)
         })
     }
   }
