@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineAsyncComponent, defineComponent, PropType, ref } from 'vue'
+import { computed, defineComponent, PropType, ref } from 'vue'
 import PrimaryButton from '@/components/common/PrimaryButton.vue'
 import TasksListItem from '@/components/TasksListItem.vue'
 import { PlusIcon } from '@heroicons/vue/24/outline'
