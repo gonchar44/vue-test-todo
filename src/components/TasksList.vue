@@ -1,5 +1,8 @@
 <template>
-  <div class="w-full max-w-[600px] flex flex-col p-3 gap-y-8 mx-auto">
+  <div
+    class="w-full max-w-[600px] flex flex-col p-3 gap-y-8 mx-auto"
+    :class="[isNested && 'bg-gray-100 rounded-md my-3']"
+  >
     <PrimaryButton
       v-if="isNested || !isSubtask"
       class="ml-7"
@@ -20,12 +23,11 @@
 
     <ModalTemplate
       v-if="isCreateModalOpened"
-      :is-form="true"
       :is-hidden-buttons="true"
       :title="`Create ${isNested ? 'subtask' : 'task'}`"
       @on-close="closeModal"
     >
-      <CreateTaskForm @on-close="closeModal" />
+      <TaskForm @on-close="closeModal" />
     </ModalTemplate>
   </div>
 </template>
@@ -45,7 +47,7 @@ export default defineComponent({
     TasksListItem,
     PlusIcon,
     ModalTemplate: defineAsyncComponent(() => import('@/components/common/ModalTemplate.vue')),
-    CreateTaskForm: defineAsyncComponent(() => import('@/components/CreateTaskForm.vue'))
+    TaskForm: defineAsyncComponent(() => import('@/components/TaskForm.vue'))
   },
   props: {
     isSubtask: Boolean,

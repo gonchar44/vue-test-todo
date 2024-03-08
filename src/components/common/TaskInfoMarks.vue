@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute -top-2 left-2 flex gap-x-2">
+  <div class="absolute -top-2 left-9 flex gap-x-2">
     <template v-for="(mark, markIndex) in marksData" :key="markIndex">
       <span v-if="mark.isVisible" :class="mark.class">{{ mark.text }}</span>
     </template>
