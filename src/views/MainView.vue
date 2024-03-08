@@ -1,26 +1,37 @@
 <template>
   <TasksList :tasks="tasks" />
+
+  <ModalTemplate v-if="isTasksError" title="Error!" @on-close="cleanError">
+    <p class="my-7" v-html="ErrorsMessages.SOMETHING_WENT_WRONG"></p>
+  </ModalTemplate>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineAsyncComponent, defineComponent } from 'vue'
 import TasksList from '@/components/TasksList.vue'
 import { useTasksStore } from '@/stores/tasks'
 import { storeToRefs } from 'pinia'
+import { ErrorsMessages } from '@/types'
 
 export default defineComponent({
   name: 'MainView',
+  computed: {
+    ErrorsMessages() {
+      return ErrorsMessages
+    }
+  },
   components: {
-    TasksList
+    TasksList,
+    ModalTemplate: defineAsyncComponent(() => import('@/components/common/ModalTemplate.vue'))
   },
   setup() {
     const tasksStore = useTasksStore()
-    const { fetchTasks } = tasksStore
-    const { tasks } = storeToRefs(tasksStore)
+    const { fetchTasks, cleanError } = tasksStore
+    const { isError: isTasksError, tasks } = storeToRefs(tasksStore)
 
     fetchTasks()
 
-    return { tasks }
+    return { isTasksError, tasks, cleanError }
   }
 })
 </script>
