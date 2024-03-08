@@ -43,13 +43,8 @@
       </div>
     </div>
 
-    <div v-if="isOpenedDetails" class="w-11/12 mx-auto">
-      <TasksList
-        v-if="isOpenedDetails"
-        :tasks="subtasks"
-        :is-subtask="isSubtask"
-        :is-nested="isNestedList"
-      />
+    <div v-if="isOpenedDetails && isNestedList" class="w-11/12 mx-auto">
+      <TasksList v-if="isOpenedDetails" :tasks="subtasks" :is-nested="isNestedList" />
     </div>
 
     <!--    Editing modal-->
@@ -91,7 +86,6 @@ import DoneToggle from '@/components/common/DoneToggle.vue'
 import TaskInfoMarks from '@/components/common/TaskInfoMarks.vue'
 import ListButton from '@/components/common/ListButton.vue'
 import { useTasksStore } from '@/stores/tasks'
-import { checkIsSubtask } from '@/helpers'
 
 export default defineComponent({
   name: 'TasksListItem',
@@ -114,10 +108,6 @@ export default defineComponent({
     }
   },
   setup(props) {
-    if (!(props.task as Subtask).parent_id) {
-      provide('parent-task-id', props.task.id)
-    }
-
     // Store
     const tasksStore = useTasksStore()
     const { deleteSubtask, deleteTask } = tasksStore
@@ -127,18 +117,18 @@ export default defineComponent({
     const isUnwrapped = ref(false)
     const isEditingModalOpened = ref(false)
     const isDeletionModalOpened = ref(false)
-    const isSubtask = computed(() => checkIsSubtask(props.task))
-    const subtasks = computed(() => (!isSubtask.value ? (props.task as Task).subtasks : []))
+    const isNestedList = computed(() => !(props.task as Subtask).parent_id)
+    const subtasks = computed(() => (isNestedList.value ? (props.task as Task).subtasks : []))
     const isDetails = computed(() =>
-      isSubtask.value ? !!props.task.notes : !!props.task.notes || (subtasks.value?.length ?? 0) > 0
+      !isNestedList.value
+        ? !!props.task.notes
+        : !!props.task.notes || (subtasks.value?.length ?? 0) > 0
     )
     const isOpenedDetails = computed(() => isUnwrapped.value && isDetails)
-    const taskLink = computed(() =>
-      isSubtask.value
-        ? `/task/${(props.task as Subtask).parent_id}/subtask/${props.task.id}`
-        : `/task/${props.task.id}`
-    )
-    const isNestedList = computed(() => !(props.task as Subtask).parent_id)
+
+    if (isNestedList.value) {
+      provide('parent-task-id', props.task.id)
+    }
 
     // Methods
     const closeEditingModal = () => {
@@ -150,7 +140,7 @@ export default defineComponent({
     }
 
     const submitDeletion = async () => {
-      isSubtask.value
+      !isNestedList.value
         ? await deleteSubtask((props.task as Subtask).parent_id, props.task.id)
         : await deleteTask(props.task.id)
       closeDeletionModal()
@@ -164,9 +154,7 @@ export default defineComponent({
       isDeletionModalOpened,
       isDetails,
       isOpenedDetails,
-      taskLink,
       subtasks,
-      isSubtask,
       isNestedList,
       closeEditingModal,
       submitDeletion,
