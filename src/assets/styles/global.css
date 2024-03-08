@@ -1,0 +1,10 @@
+@import "fonts.css";
+
+#app {
+    min-height: 100vh;
+    font-family: Nunito, sans-serif;
+}
+
+input, textarea {
+    font-family: Nunito, sans-serif;
+}
