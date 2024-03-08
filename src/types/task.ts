@@ -11,6 +11,10 @@ export interface TaskFormFields {
   priority: Priority
 }
 
+export interface SubtaskFormFields extends TaskFormFields {
+  task: number
+}
+
 export interface Task extends TaskFormFields {
   id: number
   createdAt: string

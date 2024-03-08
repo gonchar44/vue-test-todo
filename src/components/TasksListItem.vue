@@ -25,10 +25,9 @@
       <div class="h-20 flex flex-col gap-y-1">
         <!--      Toggle details button-->
         <ListButton
-          v-if="isDetails"
           :title="isOpenedDetails ? 'Hide details' : 'Show details'"
           class="bg-primary-light"
-          @click="isUnwrapped = !isUnwrapped"
+          @on-click="isUnwrapped = !isUnwrapped"
         >
           <RectangleStackIcon
             class="w-5 h-5 text-primary-dark mx-auto"
@@ -43,8 +42,8 @@
       </div>
     </div>
 
-    <div v-if="isOpenedDetails && subtasks?.length" class="w-11/12 min-h-[20px] mx-auto">
-      <TasksList :tasks="subtasks" :is-sub-tasks="true" />
+    <div v-if="isOpenedDetails" class="w-11/12 min-h-[20px] mx-auto">
+      <TasksList :tasks="subtasks" :is-subtask="isSubtask" :is-nested="isNestedList" />
     </div>
 
     <ModalTemplate
@@ -61,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineAsyncComponent, defineComponent, PropType, ref } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, PropType, provide, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { TrashIcon, RectangleStackIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
 import { Priority, Subtask, Task } from '@/types'
@@ -91,6 +90,7 @@ export default defineComponent({
     }
   },
   setup(props) {
+    provide('parent-task-id', props.task.id)
     // Store
     const tasksStore = useTasksStore()
     const { deleteSubtask, deleteTask } = tasksStore
@@ -110,6 +110,7 @@ export default defineComponent({
         ? `/task/${(props.task as Subtask).parent_id}/subtask/${props.task.id}`
         : `/task/${props.task.id}`
     )
+    const isNestedList = computed(() => !(props.task as Subtask).parent_id)
 
     // Methods
     const closeModal = () => {
@@ -132,6 +133,8 @@ export default defineComponent({
       isOpenedDetails,
       taskLink,
       subtasks,
+      isSubtask,
+      isNestedList,
       submitDeletion,
       closeModal
     }

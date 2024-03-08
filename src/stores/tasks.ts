@@ -1,6 +1,13 @@
 import { defineStore } from 'pinia'
 import axiosService from '@/services/axios'
-import { Subtask, Task, TaskFormFields, TasksStoreState, UpdateSubtaskIsDone } from '@/types'
+import {
+  Subtask,
+  SubtaskFormFields,
+  Task,
+  TaskFormFields,
+  TasksStoreState,
+  UpdateSubtaskIsDone
+} from '@/types'
 
 export const useTasksStore = defineStore('tasks', {
   state: (): TasksStoreState => ({
@@ -33,6 +40,30 @@ export const useTasksStore = defineStore('tasks', {
         .post('/tasks', { data })
         .then((res) => {
           this.tasks.push(res.data)
+        })
+        .catch((err) => {
+          // TODO: handle error here
+          console.error('error log', err)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+    createSubtask(data: SubtaskFormFields) {
+      this.isLoading = true
+      return axiosService
+        .post('/subtasks?populate=*', { data })
+        .then((res) => {
+          this.tasks = this.tasks.map((task) => {
+            if (task.id === data.task) {
+              return {
+                ...task,
+                subtasks: [...(task.subtasks as Subtask[]), res.data]
+              }
+            }
+
+            return task
+          })
         })
         .catch((err) => {
           // TODO: handle error here

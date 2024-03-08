@@ -38,13 +38,13 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, SetupContext } from 'vue'
+import { computed, defineComponent, inject, SetupContext } from 'vue'
 import { useField, useForm } from 'vee-validate'
 import FieldEl from '@/components/common/FieldEl.vue'
 import TextareaEl from '@/components/common/TextareaEl.vue'
 import RadioGroupEl from '@/components/common/RadioGroupEl.vue'
 import { taskValidationSchema } from '@/validations'
-import { Option, Priority, TaskFormFields, TaskFormLimit } from '@/types'
+import { Option, Priority, SubtaskFormFields, TaskFormFields, TaskFormLimit } from '@/types'
 import PrimaryButton from '@/components/common/PrimaryButton.vue'
 import SecondaryButton from '@/components/common/SecondaryButton.vue'
 import { useTasksStore } from '@/stores/tasks'
@@ -60,8 +60,10 @@ export default defineComponent({
     RadioGroupEl
   },
   setup(_, { emit }: SetupContext) {
+    const parentTaskId = inject('parent-task-id', null)
+
     const tasksStore = useTasksStore()
-    const { createTask } = tasksStore
+    const { createTask, createSubtask } = tasksStore
     const { isLoading } = storeToRefs(tasksStore)
     const { errors, handleSubmit, meta } = useForm({
       validationSchema: taskValidationSchema
@@ -93,7 +95,15 @@ export default defineComponent({
     const onSubmit = handleSubmit(async (values) => {
       if (!isFormValid.value) return
 
-      await createTask(values as TaskFormFields)
+      if (parentTaskId) {
+        await createSubtask({
+          ...values,
+          task: parentTaskId as number
+        } as SubtaskFormFields)
+      } else {
+        await createTask(values as TaskFormFields)
+      }
+
       closeModal()
     })
 
