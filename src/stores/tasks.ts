@@ -5,6 +5,7 @@ import { Subtask, SubtaskFormFields, TaskFormFields, TasksStoreState, UpdateSubt
 export const useTasksStore = defineStore('tasks', {
   state: (): TasksStoreState => ({
     isLoading: false,
+    isError: false,
     pagination: {},
     tasks: []
   }),
@@ -19,9 +20,8 @@ export const useTasksStore = defineStore('tasks', {
           this.tasks = data
           this.pagination = meta.pagination
         })
-        .catch((err) => {
-          // TODO: handle error here
-          console.error('fetch tasks error', err)
+        .catch(() => {
+          this.isError = true
         })
         .finally(() => {
           this.isLoading = false
@@ -34,9 +34,8 @@ export const useTasksStore = defineStore('tasks', {
         .then((res) => {
           this.tasks.push(res.data)
         })
-        .catch((err) => {
-          // TODO: handle error here
-          console.error('error log', err)
+        .catch(() => {
+          this.isError = true
         })
         .finally(() => {
           this.isLoading = false
@@ -58,9 +57,8 @@ export const useTasksStore = defineStore('tasks', {
             return task
           })
         })
-        .catch((err) => {
-          // TODO: handle error here
-          console.error('error log', err)
+        .catch(() => {
+          this.isError = true
         })
         .finally(() => {
           this.isLoading = false
@@ -73,9 +71,8 @@ export const useTasksStore = defineStore('tasks', {
         .then(() => {
           this.tasks = this.tasks.filter((task) => task.id !== taskId)
         })
-        .catch((err) => {
-          // TODO: handle error here
-          console.error('error log', err)
+        .catch(() => {
+          this.isError = true
         })
         .finally(() => {
           this.isLoading = false
@@ -97,9 +94,8 @@ export const useTasksStore = defineStore('tasks', {
             return task
           })
         })
-        .catch((err) => {
-          // TODO: handle error here
-          console.error('error log', err)
+        .catch(() => {
+          this.isError = true
         })
         .finally(() => {
           this.isLoading = false
@@ -114,9 +110,8 @@ export const useTasksStore = defineStore('tasks', {
             return task.id === taskId ? res.data : task
           })
         })
-        .catch((err) => {
-          // TODO: handle error here
-          console.error('error log', err)
+        .catch(() => {
+          this.isError = true
         })
         .finally(() => {
           this.isLoading = false
@@ -140,13 +135,15 @@ export const useTasksStore = defineStore('tasks', {
             return task
           })
         })
-        .catch((err) => {
-          // TODO: handle error here
-          console.error('error log', err)
+        .catch(() => {
+          this.isError = true
         })
         .finally(() => {
           this.isLoading = false
         })
+    },
+    cleanError() {
+      this.isError = false
     }
   }
 })

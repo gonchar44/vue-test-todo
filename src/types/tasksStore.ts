@@ -2,6 +2,7 @@ import { Pagination, SubtaskFormFields, Task } from '@/types'
 
 export interface TasksStoreState {
   isLoading: boolean
+  isError: boolean
   pagination: Pagination | object
   tasks: Task[]
 }

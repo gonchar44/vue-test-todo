@@ -44,9 +44,7 @@
                   {{ submitText }}
                 </PrimaryButton>
 
-                <SecondaryButton :disabled="isLoading" @on-click="onClose">
-                  Cancel
-                </SecondaryButton>
+                <SecondaryButton :disabled="isLoading" @on-click="onClose"> Close </SecondaryButton>
               </div>
             </DialogPanel>
           </TransitionChild>
