@@ -13,7 +13,7 @@
 import { defineComponent, PropType } from 'vue'
 import { CheckCircleIcon, MinusCircleIcon } from '@heroicons/vue/24/outline'
 import { useTasksStore } from '@/stores/tasks'
-import { Subtask, Task } from '@/types'
+import { Subtask, Task, UpdateSubtaskIsDone } from '@/types'
 import { checkIsSubtask } from '@/helpers'
 
 export default defineComponent({
@@ -27,18 +27,18 @@ export default defineComponent({
   },
   setup(props) {
     const tasksStore = useTasksStore()
-    const { updateSubtaskIsDone, updateTaskIsDone } = tasksStore
+    const { updateSubtask, updateTask } = tasksStore
 
     const toggleIsDone = async () => {
       if (checkIsSubtask(props.task)) {
-        return updateSubtaskIsDone({
+        return updateSubtask({
           parentId: (props.task as Subtask).parent_id,
           subtaskId: props.task.id,
-          newValue: !props.task.is_done
+          data: { is_done: !props.task.is_done } as UpdateSubtaskIsDone
         })
       }
 
-      await updateTaskIsDone(props.task.id, !props.task.is_done)
+      await updateTask(props.task.id, { is_done: !props.task.is_done })
     }
 
     return { toggleIsDone }

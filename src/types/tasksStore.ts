@@ -1,4 +1,4 @@
-import { Pagination, Task } from '@/types'
+import { Pagination, SubtaskFormFields, Task } from '@/types'
 
 export interface TasksStoreState {
   isLoading: boolean
@@ -6,8 +6,12 @@ export interface TasksStoreState {
   tasks: Task[]
 }
 
-export interface UpdateSubtaskIsDone {
+export interface UpdateSubtask {
   parentId: number
   subtaskId: number
-  newValue: boolean
+  data: SubtaskFormFields | UpdateSubtaskIsDone
+}
+
+export interface UpdateSubtaskIsDone extends Omit<UpdateSubtask, 'data'> {
+  is_done: boolean
 }

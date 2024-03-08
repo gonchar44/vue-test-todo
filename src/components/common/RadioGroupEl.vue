@@ -1,7 +1,9 @@
 <template>
   <RadioGroup v-model="selected">
-    <RadioGroupLabel class="font-semibold">Priority</RadioGroupLabel>
-    <div class="space-y-2 mt-1">
+    <RadioGroupLabel class="font-bold">Priority</RadioGroupLabel>
+
+    <span v-if="isDisabled" class="block capitalize">- {{ value }}</span>
+    <div v-else class="space-y-2 mt-1">
       <RadioGroupOption
         as="template"
         v-for="option in options"
@@ -65,7 +67,8 @@ export default defineComponent({
     options: {
       type: Array as PropType<{ value: string }[]>,
       required: true
-    }
+    },
+    isDisabled: Boolean
   },
   setup(props, { emit }: SetupContext) {
     const selected = ref(props.options.find(({ value }) => value === props.value))

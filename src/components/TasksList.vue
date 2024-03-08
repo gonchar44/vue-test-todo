@@ -23,12 +23,11 @@
 
     <ModalTemplate
       v-if="isCreateModalOpened"
-      :is-form="true"
       :is-hidden-buttons="true"
       :title="`Create ${isNested ? 'subtask' : 'task'}`"
       @on-close="closeModal"
     >
-      <CreateTaskForm @on-close="closeModal" />
+      <TaskForm @on-close="closeModal" />
     </ModalTemplate>
   </div>
 </template>
@@ -48,7 +47,7 @@ export default defineComponent({
     TasksListItem,
     PlusIcon,
     ModalTemplate: defineAsyncComponent(() => import('@/components/common/ModalTemplate.vue')),
-    CreateTaskForm: defineAsyncComponent(() => import('@/components/CreateTaskForm.vue'))
+    TaskForm: defineAsyncComponent(() => import('@/components/TaskForm.vue'))
   },
   props: {
     isSubtask: Boolean,

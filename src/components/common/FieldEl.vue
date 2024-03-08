@@ -3,17 +3,23 @@
     <label
       v-if="label"
       :for="name"
-      class="font-semibold"
+      class="font-bold"
       :class="[!!errorMessage && 'text-secondary-main']"
       >{{ label }}</label
     >
+    <p v-if="isDisabled" class="break-words">
+      {{ value }}
+    </p>
     <input
-      :class="`border-b-2 outline-0 ${conditionInputClass}`"
+      v-else
+      class="border-b-2 outline-0"
+      :class="[conditionInputClass]"
       type="text"
       :name="name"
       :id="name"
       :value="value"
       :maxlength="maxLength"
+      :disabled="isDisabled"
       @input="onInput"
     />
     <span v-if="errorMessage" class="text-xs text-secondary-main mt-1">{{ errorMessage }}</span>
@@ -36,6 +42,7 @@ export default defineComponent({
       type: String,
       required: true
     },
+    isDisabled: Boolean,
     errorMessage: String,
     maxLength: Number
   },

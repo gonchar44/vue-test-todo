@@ -1,13 +1,6 @@
 import { defineStore } from 'pinia'
 import axiosService from '@/services/axios'
-import {
-  Subtask,
-  SubtaskFormFields,
-  Task,
-  TaskFormFields,
-  TasksStoreState,
-  UpdateSubtaskIsDone
-} from '@/types'
+import { Subtask, SubtaskFormFields, TaskFormFields, TasksStoreState, UpdateSubtask } from '@/types'
 
 export const useTasksStore = defineStore('tasks', {
   state: (): TasksStoreState => ({
@@ -94,12 +87,14 @@ export const useTasksStore = defineStore('tasks', {
         .delete(`/subtasks/${subtaskId}`)
         .then(() => {
           this.tasks = this.tasks.map((task) => {
-            return task.id === parentId
-              ? {
-                  ...task,
-                  subtasks: task.subtasks?.filter((subtask: Subtask) => subtask.id !== subtaskId)
-                }
-              : task
+            if (task.id === parentId) {
+              return {
+                ...task,
+                subtasks: task.subtasks?.filter((subtask: Subtask) => subtask.id !== subtaskId)
+              }
+            }
+
+            return task
           })
         })
         .catch((err) => {
@@ -110,37 +105,47 @@ export const useTasksStore = defineStore('tasks', {
           this.isLoading = false
         })
     },
-    updateSubtaskIsDone({ parentId, subtaskId, newValue }: UpdateSubtaskIsDone) {
+    updateTask(taskId: number, data: TaskFormFields | { is_done: boolean }) {
+      this.isLoading = true
       return axiosService
-        .put(`/subtasks/${subtaskId}`, { data: { is_done: newValue } })
-        .then(() => {
+        .put(`tasks/${taskId}?populate=subtasks`, { data })
+        .then((res) => {
           this.tasks = this.tasks.map((task) => {
-            return task.id === parentId
-              ? {
-                  ...task,
-                  subtasks: task.subtasks?.map((subtask: Subtask) =>
-                    subtask.id === subtaskId ? { ...subtask, is_done: newValue } : subtask
-                  )
-                }
-              : task
+            return task.id === taskId ? res.data : task
           })
         })
         .catch((err) => {
           // TODO: handle error here
           console.error('error log', err)
+        })
+        .finally(() => {
+          this.isLoading = false
         })
     },
-    updateTaskIsDone(taskId: number, newValue: boolean) {
+    updateSubtask({ parentId, subtaskId, data }: UpdateSubtask) {
+      this.isLoading = true
       return axiosService
-        .put(`/tasks/${taskId}?populate=subtasks`, { data: { is_done: newValue } })
-        .then(() => {
-          this.tasks = this.tasks.map((task): Task => {
-            return task.id === taskId ? { ...task, is_done: newValue } : task
+        .put(`/subtasks/${subtaskId}?populate=*`, { data })
+        .then((res) => {
+          this.tasks = this.tasks.map((task) => {
+            if (task.id === parentId) {
+              return {
+                ...task,
+                subtasks: task.subtasks?.map((subtask: Subtask) =>
+                  subtask.id === subtaskId ? res.data : subtask
+                )
+              }
+            }
+
+            return task
           })
         })
         .catch((err) => {
           // TODO: handle error here
           console.error('error log', err)
+        })
+        .finally(() => {
+          this.isLoading = false
         })
     }
   }
