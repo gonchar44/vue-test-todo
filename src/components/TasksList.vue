@@ -3,23 +3,26 @@
     class="w-full max-w-[600px] flex flex-col p-3 gap-y-8 mx-auto"
     :class="[isNested && 'bg-gray-100 rounded-md my-3']"
   >
-    <PrimaryButton
-      v-if="isNested || !isSubtask"
-      class="ml-7"
-      @on-click="isCreateModalOpened = true"
-    >
+    <PrimaryButton class="ml-7" @on-click="isCreateModalOpened = true">
       <PlusIcon class="w-5 h-5 text-primary-dark" />
-      <span v-if="isNested">Subtask</span>
-      <span v-else>Task</span>
+      <span>{{ isNested ? 'Subtask' : 'Task' }}</span>
     </PrimaryButton>
 
     <ul v-if="sortedTasks.length > 0" class="w-full flex flex-col gap-y-4">
       <TasksListItem
         v-for="task in sortedTasks"
         :task="task"
-        :key="`${!getIsSubtask(task) ? 'subtask-' : ''}${task.id}`"
+        :key="`${isNested ? 'subtask-' : ''}${task.id}`"
       />
     </ul>
+    <div
+      v-else
+      class="w-full h-56 leading-8 bg-primary-main rounded-md flex justify-center items-center"
+    >
+      <p class="max-w-max font-semibold">
+        The {{ !isNested ? 'tasks' : 'subtasks' }} list is empty.
+      </p>
+    </div>
 
     <ModalTemplate
       v-if="isCreateModalOpened"
@@ -50,7 +53,6 @@ export default defineComponent({
     TaskForm: defineAsyncComponent(() => import('@/components/TaskForm.vue'))
   },
   props: {
-    isSubtask: Boolean,
     isNested: Boolean,
     tasks: {
       type: Array as PropType<Task[] | Subtask[]>
@@ -62,13 +64,11 @@ export default defineComponent({
     const sortedTasks = computed<Task[] | Subtask[]>(() => sortTasks(props.tasks || []))
 
     // Methods
-    const getIsSubtask = (task: Task | Subtask) => (task as Task)?.subtasks
-
     const closeModal = () => {
       isCreateModalOpened.value = false
     }
 
-    return { isCreateModalOpened, sortedTasks, getIsSubtask, closeModal }
+    return { isCreateModalOpened, sortedTasks, closeModal }
   }
 })
 </script>
