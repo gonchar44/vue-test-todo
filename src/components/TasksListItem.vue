@@ -42,8 +42,13 @@
       </div>
     </div>
 
-    <div v-if="isOpenedDetails" class="w-11/12 min-h-[20px] mx-auto">
-      <TasksList :tasks="subtasks" :is-subtask="isSubtask" :is-nested="isNestedList" />
+    <div v-if="isOpenedDetails" class="w-11/12 mx-auto">
+      <TasksList
+        v-if="isOpenedDetails"
+        :tasks="subtasks"
+        :is-subtask="isSubtask"
+        :is-nested="isNestedList"
+      />
     </div>
 
     <ModalTemplate

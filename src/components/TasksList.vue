@@ -1,5 +1,8 @@
 <template>
-  <div class="w-full max-w-[600px] flex flex-col p-3 gap-y-8 mx-auto">
+  <div
+    class="w-full max-w-[600px] flex flex-col p-3 gap-y-8 mx-auto"
+    :class="[isNested && 'bg-gray-100 rounded-md my-3']"
+  >
     <PrimaryButton
       v-if="isNested || !isSubtask"
       class="ml-7"
