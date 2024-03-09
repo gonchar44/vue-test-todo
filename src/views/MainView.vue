@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineAsyncComponent, defineComponent, ref } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, onMounted, ref } from 'vue'
 import TasksList from '@/components/TasksList.vue'
 import { useTasksStore } from '@/stores/tasks'
 import { storeToRefs } from 'pinia'
@@ -33,8 +33,13 @@ export default defineComponent({
     const { pagination, isError: isTasksError, tasks } = storeToRefs(tasksStore)
     const isThereNextPage = computed(() => pagination.value.page < pagination.value.pageCount)
 
-    fetchTasks(1)
+    onMounted(() => {
+      if (!tasks.value.length) {
+        fetchTasks(1)
+      }
+    })
 
+    // Infinit scroll loading handling
     useIntersectionObserver(target, ([{ isIntersecting }]) => {
       if (isIntersecting && isThereNextPage) {
         goNextPage()
