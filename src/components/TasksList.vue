@@ -16,7 +16,7 @@
           :key="`${isNested ? 'subtask-' : ''}${task.id}`"
         />
       </ul>
-      <slot></slot>
+      <slot name="content" />
     </template>
     <MessageBlock v-else> The {{ !isNested ? 'tasks' : 'subtasks' }} list is empty. </MessageBlock>
     <CircleLoader v-if="isLoading" />
@@ -27,7 +27,9 @@
       :title="`Create ${isNested ? 'subtask' : 'task'}`"
       @on-close="closeModal"
     >
-      <TaskForm @on-close="closeModal" />
+      <template #content>
+        <TaskForm @on-close="closeModal" />
+      </template>
     </ModalTemplate>
   </div>
 </template>

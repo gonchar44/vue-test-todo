@@ -1,7 +1,6 @@
 <template>
   <TransitionRoot appear :show="true" as="template">
     <Dialog as="div" @close="onClose" class="relative z-10">
-      <button @click="onClose"></button>
       <TransitionChild
         as="template"
         enter="duration-300 ease-out"
@@ -33,7 +32,7 @@
               </DialogTitle>
               <hr />
 
-              <slot />
+              <slot name="content" />
 
               <div v-if="!isHiddenButtons" class="flex gap-x-5 mt-4">
                 <PrimaryButton
@@ -50,6 +49,8 @@
           </TransitionChild>
         </div>
       </div>
+      <!--      hidden focus trap button-->
+      <button @click="onClose">close</button>
     </Dialog>
   </TransitionRoot>
 </template>
