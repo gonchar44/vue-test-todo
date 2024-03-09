@@ -1,15 +1,19 @@
 <template>
   <TasksList :tasks="tasks">
-    <div v-if="isThereNextPage" ref="target">Load More...</div>
+    <template #content>
+      <div v-if="isThereNextPage" ref="target">Load More...</div>
+    </template>
   </TasksList>
 
   <ModalTemplate v-if="isTasksError" title="Error!" @on-close="cleanError">
-    <p class="my-7" v-html="ErrorsMessages.SOMETHING_WENT_WRONG"></p>
+    <template #content>
+      <p class="my-7" v-html="ErrorsMessages.SOMETHING_WENT_WRONG"></p>
+    </template>
   </ModalTemplate>
 </template>
 
 <script lang="ts">
-import { computed, defineAsyncComponent, defineComponent, ref } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, onMounted, ref } from 'vue'
 import TasksList from '@/components/TasksList.vue'
 import { useTasksStore } from '@/stores/tasks'
 import { storeToRefs } from 'pinia'
@@ -29,8 +33,13 @@ export default defineComponent({
     const { pagination, isError: isTasksError, tasks } = storeToRefs(tasksStore)
     const isThereNextPage = computed(() => pagination.value.page < pagination.value.pageCount)
 
-    fetchTasks(1)
+    onMounted(() => {
+      if (!tasks.value.length) {
+        fetchTasks(1)
+      }
+    })
 
+    // Infinit scroll loading handling
     useIntersectionObserver(target, ([{ isIntersecting }]) => {
       if (isIntersecting && isThereNextPage) {
         goNextPage()
