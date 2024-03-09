@@ -1,7 +1,7 @@
 <template>
   <div class="absolute -top-2 left-9 flex gap-x-2">
-    <template v-for="(mark, markIndex) in marksData" :key="markIndex">
-      <span v-if="mark.isVisible" :class="mark.class">{{ mark.text }}</span>
+    <template v-for="(label, labelIndex) in labelsData" :key="labelIndex">
+      <span v-if="label.isVisible" :class="label.class">{{ label.text }}</span>
     </template>
   </div>
 </template>
@@ -12,7 +12,7 @@ import { Priority, Subtask, Task } from '@/types'
 import { checkIsSubtask } from '@/helpers'
 
 export default defineComponent({
-  name: 'TaskInfoMarks',
+  name: 'TaskInfoLabels',
   props: {
     task: {
       type: Object as PropType<Task | Subtask>,
@@ -31,7 +31,7 @@ export default defineComponent({
     const subtasksAmount = computed(
       () => !checkIsSubtask(props.task) && (props.task as Task).subtasks?.length
     )
-    const marksData = computed(() => [
+    const labelsData = computed(() => [
       {
         text: `${Priority[props.task.priority]}`,
         isVisible: true,
@@ -50,7 +50,7 @@ export default defineComponent({
       }
     ])
 
-    return { marksData }
+    return { labelsData }
   }
 })
 </script>
