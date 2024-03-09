@@ -12,11 +12,12 @@
           Try to create your tasks right now!
         </p>
 
-      <CircleLoader v-if="isLoading" />
-      <router-link v-else class="flex items-center gap-x-2 font-semibold text-lg mt-5" to="/main">
-        Start <ArrowRightIcon class="w-5 h-5" />
-      </router-link>
-    </MessageBlock>
+        <CircleLoader v-if="isLoading" />
+        <router-link v-else class="flex items-center gap-x-2 font-semibold text-lg mt-5" to="/main">
+          Start <ArrowRightIcon class="w-5 h-5" />
+        </router-link>
+      </MessageBlock>
+    </template>
   </BlackMessageLayout>
 </template>
 
