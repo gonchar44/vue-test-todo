@@ -33,7 +33,7 @@
               </DialogTitle>
               <hr />
 
-              <slot />
+              <slot name="content" />
 
               <div v-if="!isHiddenButtons" class="flex gap-x-5 mt-4">
                 <PrimaryButton

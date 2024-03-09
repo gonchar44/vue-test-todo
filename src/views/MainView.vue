@@ -1,10 +1,14 @@
 <template>
   <TasksList :tasks="tasks">
-    <div v-if="isThereNextPage" ref="target">Load More...</div>
+    <template #content>
+      <div v-if="isThereNextPage" ref="target">Load More...</div>
+    </template>
   </TasksList>
 
   <ModalTemplate v-if="isTasksError" title="Error!" @on-close="cleanError">
-    <p class="my-7" v-html="ErrorsMessages.SOMETHING_WENT_WRONG"></p>
+    <template #content>
+      <p class="my-7" v-html="ErrorsMessages.SOMETHING_WENT_WRONG"></p>
+    </template>
   </ModalTemplate>
 </template>
 

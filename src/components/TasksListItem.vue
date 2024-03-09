@@ -56,7 +56,9 @@
       submit-text="Update"
       @on-close="closeEditingModal"
     >
-      <TaskForm :task="task" @on-close="closeEditingModal" />
+      <template #content>
+        <TaskForm :task="task" @on-close="closeEditingModal" />
+      </template>
     </ModalTemplate>
 
     <!--    Deletion modal-->
@@ -68,11 +70,13 @@
       @on-submit="submitDeletion"
       @on-close="closeDeletionModal"
     >
-      <DeletionTaskModal
-        :task-id="task.id"
-        :task-title="task.title"
-        :close-modal="closeDeletionModal"
-      />
+      <template #content>
+        <DeletionTaskModal
+          :task-id="task.id"
+          :task-title="task.title"
+          :close-modal="closeDeletionModal"
+        />
+      </template>
     </ModalTemplate>
   </li>
 </template>
