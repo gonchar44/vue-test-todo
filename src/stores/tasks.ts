@@ -25,7 +25,10 @@ export const useTasksStore = defineStore('tasks', {
         .then((res) => {
           const { data, meta } = res.data
 
-          this.tasks = [...this.tasks, ...data]
+          const newTasks = data.filter(
+            (newTask) => !this.tasks.some((existingTask) => existingTask.id === newTask.id)
+          )
+          this.tasks = [...this.tasks, ...newTasks]
           this.pagination = meta.pagination
         })
         .catch(() => {

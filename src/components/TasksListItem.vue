@@ -10,7 +10,7 @@
       >
         <!--      Main task block-->
         <div class="w-10/12 h-full flex flex-col justify-between">
-          <TaskInfoMarks :task="task" />
+          <TaskInfoLabels :task="task" />
           <h3 class="text-xl font-bold truncate">{{ task.title }}</h3>
           <span
             v-if="task.subtitle"
@@ -83,7 +83,7 @@ import { storeToRefs } from 'pinia'
 import { TrashIcon, RectangleStackIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
 import { Priority, Subtask, Task } from '@/types'
 import DoneToggle from '@/components/common/DoneToggle.vue'
-import TaskInfoMarks from '@/components/common/TaskInfoMarks.vue'
+import TaskInfoLabels from '@/components/common/TaskInfoLabels.vue'
 import ListButton from '@/components/common/ListButton.vue'
 import { useTasksStore } from '@/stores/tasks'
 
@@ -96,7 +96,7 @@ export default defineComponent({
     DeletionTaskModal: defineAsyncComponent(() => import('@/components/DeletionTaskModal.vue')),
     DoneToggle,
     TrashIcon,
-    TaskInfoMarks,
+    TaskInfoLabels,
     ListButton,
     RectangleStackIcon,
     ChevronRightIcon
